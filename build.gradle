@@ -260,6 +260,7 @@ runtime {
                'java.xml',
                'jdk.dynalink',
                'jdk.jfr',
+               'jdk.httpserver',
                'jdk.jsobject',
                'jdk.unsupported',
                'jdk.unsupported.desktop',

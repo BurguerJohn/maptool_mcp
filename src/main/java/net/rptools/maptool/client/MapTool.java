@@ -1805,6 +1805,8 @@ public class MapTool {
                           });
 
                       MapTool.postInitialize();
+                      net.rptools.maptool.mcp.McpOptionsDialog.installMenu();
+                      net.rptools.maptool.mcp.McpBridgeServer.startFromEnvironment();
                     });
               });
         });

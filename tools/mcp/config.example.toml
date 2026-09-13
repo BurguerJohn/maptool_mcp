@@ -1,0 +1,10 @@
+# Mescle esta seção em ~/.codex/config.toml ou .codex/config.toml do projeto.
+# Troque o caminho abaixo pelo caminho absoluto do clone deste fork.
+# No Windows, use command = "python" e um caminho como "C:/repos/maptool_mcp/...".
+[mcp_servers.maptool]
+command = "python3"
+args = ["/caminho/absoluto/maptool_mcp/tools/mcp/maptool_mcp.py"]
+# O segredo vem do ambiente do processo Codex, não deste arquivo versionado.
+env_vars = ["MAPTOOL_MCP_TOKEN", "MAPTOOL_MCP_URL"]
+startup_timeout_sec = 10
+tool_timeout_sec = 30
