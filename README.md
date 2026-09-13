@@ -21,8 +21,12 @@ Welcome to this fork of the MapTool Virtual Tabletop. The upstream repository is
 
 This fork adds an opt-in local MCP bridge for creating maps, moving characters, changing scenes,
 and interacting with doors through Codex, using the permissions of the connected MapTool player.
-See the [Portuguese setup and usage guide](doc/mcp.md) for installation, configuration, the
-included `maptool-session` Codex skill, and multiplayer validation steps.
+The MCP menu provides campaign checkboxes for ImageGen, NPCs, scenery and miscellaneous objects.
+Persistent locations connect worlds, cities and interiors, with procedural maps on first visit,
+NPC followers and fire that can spread into and destroy nested locations. Six Codex skills guide
+session control, world management and content generation; generated art is imported as native assets.
+See the [Portuguese setup and usage guide](doc/mcp.md) for installation, configuration, examples
+and multiplayer validation steps.
 
 ## So what is MapTool?
 

@@ -98,7 +98,18 @@ class MapToolMcpServiceTest {
   void schemasAreDetachedAndReadOnlyToolsAreAnnotated() {
     var service = new MapToolMcpService();
     var first = service.listTools();
-    assertEquals(13, first.size());
+    var names = new java.util.HashSet<String>();
+    first.forEach(tool -> names.add(tool.getAsJsonObject().get("name").getAsString()));
+    assertEquals(first.size(), names.size(), "Every tool has a unique dispatch name");
+    assertTrue(
+        names.containsAll(
+            java.util.Set.of(
+                "maptool_get_session",
+                "maptool_move_token",
+                "maptool_create_door",
+                "maptool_get_content_options",
+                "maptool_create_npc",
+                "maptool_advance_world")));
     var read = first.get(0).getAsJsonObject();
     assertTrue(read.getAsJsonObject("annotations").get("readOnlyHint").getAsBoolean());
     assertFalse(read.getAsJsonObject("annotations").get("destructiveHint").getAsBoolean());

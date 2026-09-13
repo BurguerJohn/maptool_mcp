@@ -1,6 +1,6 @@
 ---
 name: maptool-session
-description: Criar e atualizar mapas e conduzir ações de personagens no MapTool por MCP, incluindo movimento, portas e troca de cenário, respeitando a sessão e as permissões do jogador conectado. Use para operar uma partida do MapTool com Codex.
+description: Operar uma partida do MapTool por MCP, consultando a sessão e executando movimentos, portas e alterações de mapas. Coordena as skills de arte, NPCs, objetos e locais persistentes conforme o pedido e as opções habilitadas.
 ---
 
 # Operar uma sessão do MapTool
@@ -8,6 +8,13 @@ description: Criar e atualizar mapas e conduzir ações de personagens no MapToo
 Use as ferramentas do servidor MCP `maptool` para executar o pedido na instância
 aberta do MapTool. A ponte representa o jogador conectado nessa instância: o token
 de autenticação da ponte não transforma um jogador em mestre.
+
+Consulte também `maptool_get_content_options` antes de criar conteúdo. As opções
+`imagegen`, `npc`, `scenery` e `misc` são controladas pelo mestre e persistem na
+campanha. Um checkbox habilitado não instala um provedor externo de imagens.
+Para pedidos especializados, use as skills disponíveis `maptool-imagegen`,
+`maptool-npc`, `maptool-scenery`, `maptool-misc` e `maptool-world`. A disponibilidade
+dessas skills não substitui a permissão concedida pela sessão e pelos checkboxes.
 
 ## Identificar a sessão e os objetos
 
@@ -50,6 +57,11 @@ o cenário dos demais. Isso não transfere tokens entre mapas. Mapas novos são 
 e têm névoa; `reveal: true` torna o mapa visível, mas não explora sua névoa. Configure
 a revelação conforme o pedido da mesa antes de apresentar a cena.
 
+Para mundo, cidade e interiores, consulte o catálogo de locais e use portais e
+`maptool_enter_location` para transferir os personagens e seus acompanhantes.
+Reutilize o local persistente em visitas posteriores; materialize o mapa apenas
+quando necessário. Essas operações de mundo exigem a instância do mestre.
+
 Para mover um personagem, consulte a posição atual e use `maptool_move_token`.
 A ponte valida a propriedade e visibilidade do token, restrições da sessão e o
 trajeto direto. Ela não escolhe uma rota em volta de obstáculos. Use trechos livres
@@ -69,16 +81,21 @@ valores definidos pelo usuário, pela campanha ou por uma resolução explícita
 mestre. `maptool_update_token` aceita estados booleanos que já existem na campanha;
 propriedades e visibilidade exigem mestre. Esta integração não é um motor de regras
 ou de dados: não invente rolagens,
-dano, sucesso de ataques ou regras de movimento. A criação de mapas usa geometria
-do MapTool; não prometa imagens geradas por IA. Não use macros arbitrárias, scripts
+dano, sucesso de ataques ou regras de movimento. A criação de mapas pode usar
+geometria, assets existentes ou arte gerada pelo provedor disponível ao Codex.
+`maptool_prepare_image` apenas prepara o fluxo: uma imagem só foi criada depois
+que o gerador retornou o arquivo, e só está no mapa depois da importação e criação
+do elemento. Não use macros arbitrárias, scripts
 ou edição direta do arquivo da campanha como alternativa às ferramentas MCP.
 
 ## Conferir e comunicar o resultado
 
 Após alterações relevantes, consulte o estado resultante. Relate o que mudou de
 fato, o personagem ou mapa afetado e qualquer impedimento restante. As ferramentas
-operam sob demanda; não anuncie monitoramento contínuo ou ações futuras automáticas
-sem que exista uma rotina separada para isso.
+operam sob demanda; o acompanhamento de NPCs pelo host mestre com a ponte ativa
+também reage aos eventos de movimento. Confira esse estado na sessão antes de
+prometer acompanhamento automático. Não anuncie uma IA contínua de NPCs, resolução
+automática de combate ou avanço automático do incêndio.
 
 Se uma chamada de alteração perder a conexão ou expirar, consulte o estado antes
 de repetir: a primeira chamada pode ter sido aplicada. Não recrie automaticamente

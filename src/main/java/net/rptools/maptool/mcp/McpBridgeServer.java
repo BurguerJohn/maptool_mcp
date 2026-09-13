@@ -60,6 +60,7 @@ public final class McpBridgeServer implements AutoCloseable {
   private final ScheduledExecutorService deadlines;
   private final byte[] authorization;
   private final ToolHandler handler;
+  private boolean followerControllerStarted;
 
   private static final class UnknownToolException extends RuntimeException {}
 
@@ -127,6 +128,8 @@ public final class McpBridgeServer implements AutoCloseable {
                 }
               });
       bridge.start();
+      McpFollowerController.start();
+      bridge.followerControllerStarted = true;
       Runtime.getRuntime().addShutdownHook(new Thread(bridge::close, "maptool-mcp-shutdown"));
       log.info("MapTool MCP bridge listening on 127.0.0.1:{}", bridge.port());
     } catch (IllegalArgumentException e) {
@@ -146,6 +149,7 @@ public final class McpBridgeServer implements AutoCloseable {
 
   @Override
   public void close() {
+    if (followerControllerStarted) McpFollowerController.stop();
     server.stop(0);
     executor.shutdownNow();
     deadlines.shutdownNow();
