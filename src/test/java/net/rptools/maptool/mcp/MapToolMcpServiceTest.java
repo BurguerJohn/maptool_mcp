@@ -199,6 +199,31 @@ class MapToolMcpServiceTest {
   }
 
   @Test
+  void gmCanDisablePlayerMapDiscoveryAndSceneSwitching() throws Exception {
+    withSession(
+        false,
+        context -> {
+          Zone another = zone("Other scene", true);
+          context.campaign.putZone(another);
+          context.policy.setHiddenMapSelectUI(true);
+          var listed = context.service.callTool("maptool_list_maps", new JsonObject());
+          assertEquals(1, listed.getAsJsonArray("maps").size());
+          assertEquals(
+              context.zone.getId().toString(),
+              listed.getAsJsonArray("maps").get(0).getAsJsonObject().get("mapId").getAsString());
+          JsonObject target = new JsonObject();
+          target.addProperty("mapId", another.getId().toString());
+          assertThrows(
+              IllegalArgumentException.class,
+              () -> context.service.callTool("maptool_get_map", target));
+          assertThrows(
+              SecurityException.class,
+              () -> context.service.callTool("maptool_switch_scene", target));
+          verify(context.frame, never()).setCurrentZoneRenderer(any(ZoneRenderer.class));
+        });
+  }
+
+  @Test
   void gmMapUpdateAndDrawingUseNativeSynchronizationOnce() throws Exception {
     withSession(
         true,

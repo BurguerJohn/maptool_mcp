@@ -102,6 +102,7 @@ public final class MapToolMcpService {
       result.addProperty("currentMapId", current.getZone().getId().toString());
     }
     result.addProperty("movementLocked", MapTool.getServerPolicy().isMovementLocked());
+    result.addProperty("mapSelectionLocked", MapTool.getServerPolicy().getMapSelectUIHidden());
     result.addProperty("tokenEditorLocked", MapTool.getServerPolicy().isTokenEditorLocked());
     result.addProperty("tokenContextLocked", MapTool.getServerPolicy().isTokenContextLocked());
     result.addProperty(
@@ -173,6 +174,9 @@ public final class MapToolMcpService {
   }
 
   private JsonObject switchScene(JsonObject args) {
+    if (!isGM() && MapTool.getServerPolicy().getMapSelectUIHidden()) {
+      throw new SecurityException("Map selection is disabled for players by the GM");
+    }
     if (args.has("reveal") || bool(args, "forcePlayers", false)) requireGM();
     Zone zone = zone(args);
     if (bool(args, "forcePlayers", false) && !zone.isVisible() && !bool(args, "reveal", false)) {
@@ -462,7 +466,11 @@ public final class MapToolMcpService {
   }
 
   private boolean canReadMap(Zone zone) {
-    return isGM() || zone.isVisible();
+    if (isGM()) return true;
+    if (!zone.isVisible()) return false;
+    if (!MapTool.getServerPolicy().getMapSelectUIHidden()) return true;
+    ZoneRenderer current = MapTool.getFrame().getCurrentZoneRenderer();
+    return current != null && current.getZone() == zone;
   }
 
   private boolean canReadToken(Zone zone, Token token) {

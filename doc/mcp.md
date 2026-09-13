@@ -161,7 +161,7 @@ os IDs usados nas alterações devem vir das consultas ou criações anteriores.
 | `maptool_get_map` | Todos | `mapId`; tokens permitidos com paginação por `offset` e `limit` de até 200. Use `nextOffset` quando retornado. |
 | `maptool_create_map` | Mestre | `name`; opcionais `gridSize`, `unitsPerCell`, `background`, `visible`, `fog`. Cria grade quadrada. |
 | `maptool_update_map` | Mestre | `mapId`; altera `name`, `visible` e `fog`. |
-| `maptool_switch_scene` | Todos, com limites | `mapId` seleciona o mapa local. Só o mestre pode usar `reveal` ou `forcePlayers: true`. |
+| `maptool_switch_scene` | Todos, com limites | `mapId` seleciona o mapa local quando o mestre permite a seleção de mapas. Só o mestre pode usar `reveal` ou `forcePlayers: true`. |
 | `maptool_create_token` | Mestre | `mapId`, `name`, `x`, `y`; opcionais `owners`, `type`, `layer`, `color`, `imageAssetId`, `properties`. |
 | `maptool_update_token` | Proprietário ou mestre | `mapId`, `tokenId`; jogador pode alterar `name`, `facing` e estados booleanos já configurados, se a edição estiver liberada. `properties` e `visible` exigem mestre. |
 | `maptool_move_token` | Proprietário ou mestre | `mapId`, `tokenId`, `x`, `y` em pixels; valida o trajeto direto para jogadores. |
