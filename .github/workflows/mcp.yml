@@ -1,0 +1,56 @@
+name: MCP Integration
+
+on:
+  push:
+    branches: ["feat/codex-mcp", "develop"]
+    paths:
+      - "tools/mcp/**"
+      - "src/main/java/net/rptools/maptool/mcp/**"
+      - "src/test/java/net/rptools/maptool/mcp/**"
+      - "src/main/java/net/rptools/maptool/client/MapTool.java"
+      - "build.gradle"
+      - ".github/workflows/mcp.yml"
+  pull_request:
+    paths:
+      - "tools/mcp/**"
+      - "src/main/java/net/rptools/maptool/mcp/**"
+      - "src/test/java/net/rptools/maptool/mcp/**"
+      - "src/main/java/net/rptools/maptool/client/MapTool.java"
+      - "build.gradle"
+      - ".github/workflows/mcp.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.10", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m unittest discover -s tools/mcp -p 'test_*.py' -v
+
+  java:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+      - name: Compile, check formatting and run MCP integration tests
+        run: xvfb-run -a ./gradlew --no-daemon :compileJava spotlessCheck :test --tests 'net.rptools.maptool.mcp.*'
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-java-test-reports
+          path: |
+            build/reports/tests/test/**
+            build/test-results/test/**
